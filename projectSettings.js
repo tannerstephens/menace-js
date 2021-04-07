@@ -1,4 +1,4 @@
 module.exports = {
   title: 'Menace JS',
-  repo: ''
+  repo: 'https://tannerstephens.com/menace-js/'
 };
