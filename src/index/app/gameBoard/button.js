@@ -1,7 +1,7 @@
 import React from 'react';
 
-export default ({onClick}) => (
+export default ({value, onClick}) => (
   <button className='restart' onClick={onClick}>
-    Play Again
+    {value}
   </button>
 )

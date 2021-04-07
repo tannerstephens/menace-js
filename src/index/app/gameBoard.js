@@ -1,25 +1,66 @@
 import React from 'react';
 
 import Square from './gameBoard/square';
-import Restart from './gameBoard/restart';
+import Button from './gameBoard/button';
+import Menace from './gameBoard/menace';
 
 class GameBoard extends React.Component {
-  state = {
-    squares: Array(9).fill(null),
-    isXTurn: true
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      squares: Array(9).fill(null)
+    };
+
+    this.menace = Menace.load(localStorage.getItem('menace'));
+  }
+
+  _stringBoardState(state) {
+    return state.reduce((prev, cur) => {
+      if(cur == null) {
+        prev += ' ';
+      } else {
+        prev += cur;
+      }
+
+      return prev
+    }, '');
   }
 
   renderRestartButton() {
     return (
-      <Restart
+      <Button
+        value={'Play Again!'}
         onClick={() => {
+          const winner = this.detectWinner();
+          const winOrDraw = (winner == 'O') || (this.boardIsFull() && winner == null);
+
           this.setState({
-            squares: Array(9).fill(null),
-            isXTurn: true
+            squares: Array(9).fill(null)
+          }, () => {
+            this.menace.restart(winOrDraw, !!winner);
+            localStorage.setItem('menace', this.menace.save());
+            this._firstTurn();
           });
         }}
       />
     );
+  }
+
+  _firstTurn() {
+    const newSquares = [...this.state.squares];
+
+    const menaceTurn = this.menace.takeTurn(this._stringBoardState(newSquares));
+
+    newSquares[menaceTurn] = 'O';
+
+    this.setState({
+      squares: newSquares
+    });
+  }
+
+  componentDidMount() {
+    this._firstTurn();
   }
 
   detectWinner() {
@@ -53,11 +94,20 @@ class GameBoard extends React.Component {
       onClick={() => {
         if(this.state.squares[i] == null && this.detectWinner() == null) {
           const newSquares = [...this.state.squares];
-          newSquares[i] = this.state.isXTurn ? 'X' : 'O';
+          newSquares[i] = 'X';
 
           this.setState({
-            squares: newSquares,
-            isXTurn: !this.state.isXTurn
+            squares: newSquares
+          }, () => {
+            if(this.detectWinner() == null && !this.boardIsFull()) {
+              const newSquares = [...this.state.squares];
+              const menaceTurn = this.menace.takeTurn(this._stringBoardState(newSquares));
+              newSquares[menaceTurn] = 'O';
+
+              this.setState({
+                squares: newSquares
+              });
+            }
           });
         }
       }}
@@ -76,7 +126,7 @@ class GameBoard extends React.Component {
     } else if(this.boardIsFull()) {
       return 'Draw!';
     }
-    return `${this.state.isXTurn ? 'X' : 'O'}'s turn`
+    return `Your turn`
   }
 
   render() {
