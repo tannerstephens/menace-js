@@ -33,13 +33,21 @@ class GameBoard extends React.Component {
         value={'Play Again!'}
         onClick={() => {
           const winner = this.detectWinner();
-          const winOrDraw = (winner == 'O') || (this.boardIsFull() && winner == null);
+          const boardFull = this.boardIsFull();
+
+          const oWins = winner == 'O';
+          const draw = (winner == null) && boardFull;
+
+
+          const winOrDraw = oWins || draw;
+          const train = (winner != null) || boardFull;
+
+          this.menace.restart(winOrDraw, train);
+          localStorage.setItem('menace', this.menace.save());
 
           this.setState({
             squares: Array(9).fill(null)
           }, () => {
-            this.menace.restart(winOrDraw, !!winner);
-            localStorage.setItem('menace', this.menace.save());
             this._firstTurn();
           });
         }}
