@@ -1,4 +1,4 @@
 module.exports = {
-  title: 'yarnTemplate',
+  title: 'Menace JS',
   repo: ''
 };

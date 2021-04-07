@@ -6,7 +6,23 @@ module.exports = {
     mode: 'development',
     devServer: {
         contentBase: 'dist',
-        port: 3000
+        port: 3000,
+        host: '0.0.0.0'
+    },
+    module: {
+        rules: [
+            {
+                test: /\.css$/i,
+                use: ["style-loader", "css-loader"],
+            },
+            {
+                test: /\.(js)$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader'
+                }
+            }
+        ]
     },
     devtool: 'inline-source-map',
     plugins: [

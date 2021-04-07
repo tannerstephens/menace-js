@@ -6,7 +6,12 @@ const TerserPlugin = require('terser-webpack-plugin');
 module.exports = {
     mode: 'production',
     module: {
-        rules: [{
+        rules: [
+            {
+                test: /\.css$/i,
+                use: ["style-loader", "css-loader"],
+            },
+            {
             test: /\.(js)$/,
             exclude: /node_modules/,
             use: {
